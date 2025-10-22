@@ -45,7 +45,7 @@ Screenshot_Text_Extraction_API/
 
 ### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/Aaditya-Labs/Screenshort-Transcript-Projects.git
+git clone https://github.com/Aaditya-Labs/Screenshot_Text_Extraction_API.git
 cd Screenshot_Text_Extraction_API
 ```
 
