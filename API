@@ -1,0 +1,26 @@
+from flask import Flask, jsonify, request
+from fullscreenshot import take_full_screenshot
+from rectangular import take_rectangular_screenshot
+from pytesseract import image_to_string
+from PIL import Image
+import os
+
+app = Flask(__name__)
+
+@app.route("/capture/full", methods=["GET"])
+def capture_full():
+    filename = take_full_screenshot()
+    text = image_to_string(Image.open(filename))
+    return jsonify({"screenshot": filename, "extracted_text": text})
+
+@app.route("/capture/rectangle", methods=["POST"])
+def capture_rectangular():
+    data = request.get_json()
+    x1, y1, x2, y2 = data.get("x1"), data.get("y1"), data.get("x2"), data.get("y2")
+    filename = take_rectangular_screenshot(x1, y1, x2, y2)
+    text = image_to_string(Image.open(filename))
+    return jsonify({"screenshot": filename, "extracted_text": text})
+
+if __name__ == "__main__":
+    os.makedirs("screenshots", exist_ok=True)
+    app.run(debug=True, port=5000)
