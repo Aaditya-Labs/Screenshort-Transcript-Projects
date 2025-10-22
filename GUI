@@ -1,0 +1,42 @@
+import tkinter as tk
+from tkinter import messagebox
+import threading
+from fullscreenshot import take_full_screenshot
+from rectangular import take_rectangular_screenshot
+from pytesseract import image_to_string
+from PIL import Image
+import os
+
+def run_gui():
+    """Launch a simple GUI for screenshot and text extraction."""
+    root = tk.Tk()
+    root.title("Screenshot and Text Extraction API")
+    root.geometry("400x300")
+
+    def capture_full():
+        filename = take_full_screenshot()
+        messagebox.showinfo("Screenshot Captured", f"Full Screenshot saved at:\n{filename}")
+
+    def capture_rectangular():
+        messagebox.showinfo("Instruction", "Move your mouse and note down coordinates (x1, y1, x2, y2).")
+        x1, y1, x2, y2 = 100, 100, 600, 400  # Default rectangle
+        filename = take_rectangular_screenshot(x1, y1, x2, y2)
+        messagebox.showinfo("Screenshot Captured", f"Rectangular Screenshot saved at:\n{filename}")
+
+    def extract_text():
+        if not os.path.exists("screenshots"):
+            messagebox.showerror("Error", "No screenshots found.")
+            return
+        latest = sorted(os.listdir("screenshots"))[-1]
+        path = os.path.join("screenshots", latest)
+        text = image_to_string(Image.open(path))
+        messagebox.showinfo("Extracted Text", text if text.strip() else "No text found.")
+
+    tk.Button(root, text="Capture Full Screenshot", command=capture_full, width=30, height=2).pack(pady=10)
+    tk.Button(root, text="Capture Rectangular Screenshot", command=capture_rectangular, width=30, height=2).pack(pady=10)
+    tk.Button(root, text="Extract Text", command=extract_text, width=30, height=2).pack(pady=10)
+
+    root.mainloop()
+
+if __name__ == "__main__":
+    threading.Thread(target=run_gui).start()
